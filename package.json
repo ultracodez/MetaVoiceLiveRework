@@ -1,0 +1,58 @@
+{
+  "name": "MetaVoice",
+  "version": "0.3.0",
+  "description": "AI Voice Changer",
+  "main": "main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run next-dev\" \"wait-on http://localhost:3000 && cross-env IS_DEV=dev electron --trace-warnings .\"",
+    "next-dev": "cd renderer && next dev -p 3000",
+    "next-package": "cd renderer && next build",
+    "analyze-next-package": "cross-env ANALYZE=true npm run next-package",
+    "electron-package-win": "electron-forge make",
+    "electron-package-mac": "electron-forge make --arch=arm64 --platform=darwin",
+    "package-mac": "make build-server-mac && npm run next-package && npm run electron-package-mac",
+    "package-win": "make build-server-windows && npm run next-package && npm run electron-package-win",
+    "server": "echo \"Make sure METAVOICECODE_ROOT and SITE_PACKAGES are on PYTHONPATH, Makefile.variable, and defined in Environment Variables\" && echo. && cd server && python main.py",
+    "build-updater": "make build-installer ",
+    "dev-all": "concurrently \"npm run server\" \"npm run dev\""
+  },
+  "keywords": [
+    "AI"
+  ],
+  "author": "MetaVoice, Inc",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.2.1",
+    "@electron-forge/maker-zip": "^6.2.1",
+    "@next/bundle-analyzer": "^13.4.12",
+    "@types/node": "^20.4.5",
+    "@types/react": "18.2.16",
+    "@types/react-dom": "18.2.7",
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^25.3.1",
+    "install": "^0.13.0",
+    "npm": "^9.8.1",
+    "sass": "^1.64.1",
+    "typescript": "^5.1.6",
+    "wait-on": "^7.0.1"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.15",
+    "@material-tailwind/react": "^2.0.7",
+    "@tailwindcss/forms": "^0.5.4",
+    "@uidotdev/usehooks": "^2.0.1",
+    "autoprefixer": "10.4.14",
+    "classnames": "^2.3.2",
+    "embla-carousel-react": "8.0.0-rc11",
+    "eslint": "8.45.0",
+    "eslint-config-next": "13.4.12",
+    "next": "^13.4.12",
+    "postcss": "8.4.27",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.10.1",
+    "server-static": "^2.0.5",
+    "styled-components": "^6.0.5",
+    "tailwindcss": "3.3.3"
+  }
+}
