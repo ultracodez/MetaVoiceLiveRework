@@ -4,7 +4,11 @@ import styles from "react-modern-drawer/dist/index.css";
 import { IoMenuOutline, IoShareSocial } from "react-icons/io5";
 import ResultRenderer from "./Result";
 
-export default function ResultDrawer(originalAudio, convertedAudio, r) {
+export default function ResultDrawer({
+  originalAudio,
+  convertedAudio,
+  sessionRecordingEnabled,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
@@ -13,7 +17,7 @@ export default function ResultDrawer(originalAudio, convertedAudio, r) {
   // we use onMouseDown to allow someone to 'drag' but just immediately expand it
 
   return (
-    <div>
+    <div className={`${sessionRecordingEnabled ? "" : "hidden"}`}>
       <div className="hidden" />
 
       <div

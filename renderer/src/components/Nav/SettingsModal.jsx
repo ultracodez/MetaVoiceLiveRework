@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Slider } from "@material-tailwind/react/src/components/Slider/index";
 import { scaleBetween } from "../../helpers/scalebetween";
 
-export default function SettingsModal({ open, setOpen }) {
+export default function SettingsModal({ open, setOpen, ...options }) {
   const [SERVER_BASE_URL, setBaseUrl] = useState("http://localhost:58000");
   const [defaultUpdatePath, setDefaultUpdatePath] = useState();
   const [updatePath, setUpdatePath] = useState();
@@ -36,10 +36,15 @@ export default function SettingsModal({ open, setOpen }) {
       setShareData(
         localStorage.getItem("MV_SHARE_DATA") === "true" ? true : false
       );
-    if (localStorage.getItem("MV_SESSION_RECORDING"))
+    if (localStorage.getItem("MV_SESSION_RECORDING")) {
       setSessionRecording(
         localStorage.getItem("MV_SESSION_RECORDING") === "true" ? true : false
       );
+      if (options.onSessionRecordingChanged)
+        options.onSessionRecordingChanged(
+          localStorage.getItem("MV_SESSION_RECORDING") === "true" ? true : false
+        );
+    }
     if (localStorage.getItem("MV_LATENCY"))
       setLatency(localStorage.getItem("MV_LATENCY"));
     if (localStorage.getItem("MV_NOISE_SUPPRESSION"))
@@ -104,6 +109,8 @@ export default function SettingsModal({ open, setOpen }) {
 
   const handleShareData = async (value) => {
     window.localStorage.setItem("MV_SHARE_DATA", value);
+
+    setShareData(value);
     try {
       await fetch(`${SERVER_BASE_URL}/data-share?value=${value}`, {
         method: "GET",
@@ -111,12 +118,13 @@ export default function SettingsModal({ open, setOpen }) {
     } catch (error) {
       console.log(`GET /data-share failed with error: ${error}`);
     }
-
-    setShareData(value);
   };
 
   const handleSessionRecording = async (value) => {
     window.localStorage.setItem("MV_SESSION_RECORDING", value);
+    setSessionRecording(value);
+    options.onSessionRecordingChanged(value);
+
     try {
       await fetch(`${SERVER_BASE_URL}/session-recording?value=${value}`, {
         method: "GET",
@@ -124,8 +132,6 @@ export default function SettingsModal({ open, setOpen }) {
     } catch (error) {
       console.log(`GET /session-recording failed with error: ${error}`);
     }
-
-    setSessionRecording(value);
   };
 
   //TODO: Implement Supabase Auth

@@ -2,7 +2,11 @@ import { IoSettingsOutline } from "react-icons/io5";
 import SettingsModal from "./SettingsModal";
 import { useState } from "react";
 
-export default function Settings({ areFramesDropping, isServerOnline }) {
+export default function Settings({
+  areFramesDropping,
+  isServerOnline,
+  ...options
+}) {
   const [open, setOpen] = useState(false);
   const toggleOpen = () => {
     setOpen(!open);
@@ -10,7 +14,7 @@ export default function Settings({ areFramesDropping, isServerOnline }) {
 
   return (
     <div>
-      <SettingsModal {...{ open, setOpen }} />
+      <SettingsModal {...{ open, setOpen, ...options }} />
       {/* Invisible elements so the classes compile */}
       <div className="hidden bg-green-500" />
       <div className="hidden bg-red-500" />

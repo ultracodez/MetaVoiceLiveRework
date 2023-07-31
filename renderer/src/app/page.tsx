@@ -13,6 +13,7 @@ import Settings from "../components/Nav/Settings";
 import { useState, useEffect } from "react";
 import type DeviceMap from "../helpers/devicemaptypes";
 import ResultDrawer from "../components/ResultDrawer";
+import { baseVoicesTemp } from "../helpers/tempconstants";
 
 function App() {
   const [SERVER_BASE_URL, setBaseUrl] = useState("http://localhost:58000");
@@ -22,6 +23,7 @@ function App() {
       if (typeof window !== "undefined")
         setBaseUrl(await (window as any).electronAPI.getServerBaseURL());
       setAppVersion(await (window as any).electronAPI.getAppVersion());
+      setBaseVoices(await (window as any).electronAPI.getBaseVoices());
     })();
   }, [typeof window]);
 
@@ -36,6 +38,8 @@ function App() {
   const [convertStartTime, setConvertStartTime] = useState<number>();
   const [originalAudio, setOriginalAudio] = useState<string>();
   const [convertedAudio, setConvertedAudio] = useState<string>();
+  const [baseVoices, setBaseVoices] = useState(baseVoicesTemp);
+  const [sessionRecordingUI, setSessionRecordingUI] = useState(true);
 
   function handleConverting(newState) {
     console.log(process.env.npm_package_version);
@@ -127,22 +131,6 @@ function App() {
     if (!converting) setAreFramesDropping(null);
   }, [converting]);
 
-  const voices = [
-    { id: 1, img: { src: "/zeus.webp", alt: "Voice: Zeus" }, name: "Zeus" },
-
-    {
-      id: 2,
-      img: { src: "/scarlett.webp", alt: "Voice: Scarlett" },
-      name: "Scarlett",
-    },
-
-    { id: 3, img: { src: "/eva.webp", alt: "Voice: Eva" }, name: "Eva" },
-
-    { id: 4, img: { src: "/yara.webp", alt: "Voice: Yara" }, name: "Yara" },
-
-    { id: 5, img: { src: "/alex.webp", alt: "Voice: Alex" }, name: "Alex" },
-  ];
-
   useEffect(() => {
     // Fetch the device map when the server comes online
     if (!isServerOnline) return;
@@ -200,10 +188,12 @@ function App() {
   return (
     <div className="relative bg-slate-800 min-h-screen flex">
       <ResultDrawer
+        sessionRecordingEnabled={sessionRecordingUI}
         originalAudio={originalAudio}
         convertedAudio={convertedAudio}
       />
       <Settings
+        onSessionRecordingChanged={setSessionRecordingUI}
         isServerOnline={isServerOnline}
         areFramesDropping={areFramesDropping}
       />
@@ -214,7 +204,7 @@ function App() {
         <Carousel
           setVoice={setSelectedVoice}
           className="w-[35rem]"
-          voices={voices}
+          voices={baseVoices}
         />
         <div className="w-[45rem] flex justify-between mt-10">
           <div>

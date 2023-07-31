@@ -9,11 +9,11 @@ import VoiceAvatar from "../VoiceAvatar";
 // Define the props
 
 const Carousel = ({ voices, setVoice, className, ...options }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }); //options);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: 2 }); //options);
 
   // need to selectedIndex to allow this component to re-render in react.
   // Since emblaRef is a ref, it won't re-render even if there are internal changes to its state.
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(2);
 
   useEffect(() => {
     function selectHandler() {
