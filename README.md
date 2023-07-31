@@ -18,7 +18,7 @@ A fork of MVL that cleans up the code and reworks the UI.
 
 ![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/1dd6ca13-3e99-4947-9cb2-891ed2fc8e36)
 
-![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/70317fbe-07c9-4abd-85f8-35e9561b91ab)
+![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/213f874a-18ce-45fc-9f69-4900f883c220)
 
 ![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/7d54a06c-b896-4bca-bfc8-6ca8344067a4)
 
