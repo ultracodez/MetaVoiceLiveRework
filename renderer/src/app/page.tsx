@@ -12,6 +12,7 @@ import { Disclosure, Transition } from "@headlessui/react";
 import Settings from "../components/Nav/Settings";
 import { useState, useEffect } from "react";
 import type DeviceMap from "../helpers/devicemaptypes";
+import ResultDrawer from "../components/ResultDrawer";
 
 function App() {
   const [SERVER_BASE_URL, setBaseUrl] = useState("http://localhost:58000");
@@ -198,6 +199,10 @@ function App() {
 
   return (
     <div className="relative bg-slate-800 min-h-screen flex">
+      <ResultDrawer
+        originalAudio={originalAudio}
+        convertedAudio={convertedAudio}
+      />
       <Settings
         isServerOnline={isServerOnline}
         areFramesDropping={areFramesDropping}

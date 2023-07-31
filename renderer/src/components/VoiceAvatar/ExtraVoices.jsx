@@ -54,7 +54,6 @@ export default function ExtraVoicesModal({
         as="div"
         className="relative z-10"
         onClose={() => {
-          console.log("FUCKYOU");
           setOpen(false);
         }}
       >
