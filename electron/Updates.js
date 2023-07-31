@@ -32,7 +32,6 @@ async function setupUpdates(updateData) {
 }
 
 function checkUpdates(elFeed) {
-  return { name: "MetaVoice-0.2.9", notes: "", url: updateUrl };
   return fetch(elFeed)
     .then((res) => {
       if (res.status === 204) {

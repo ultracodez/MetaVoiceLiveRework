@@ -1,4 +1,4 @@
-const { app } = require("electron");
+const { app, dialog } = require("electron");
 const path = require("path");
 const { createWindow } = require("./electron/BrowserWindow");
 const { setupLifecycles } = require("./electron/Lifecycle");
@@ -14,19 +14,17 @@ var frontendPort;
 var backendServer;
 var backendPort;
 var appVersion = app.getVersion();
-const elServer = "/";
+const elServer = "https://update.electronjs.org";
 const elFeed = `${elServer}/metavoicexyz/MetaVoiceLive/${process.platform}-${
   process.arch
 }/${app.getVersion()}`;
 
 app.whenReady().then(async () => {
-  const update = checkUpdates(elFeed);
+  const update = await checkUpdates(elFeed);
 
-  if (update) {
-    setupUpdates(update);
-    app.exit(0);
-    return;
-  }
+  let window;
+
+  setupIpcHooks(app, window);
 
   frontendPort = IS_DEV ? 3000 : undefined;
   if (!IS_DEV) {
@@ -41,8 +39,16 @@ app.whenReady().then(async () => {
   }
 
   window = createWindow(IS_DEV, frontendPort);
-
-  setupIpcHooks(app, window);
+  if (update) {
+    await dialog.showMessageBox(window, {
+      title: "MetaVoice Live needs to update",
+      message: "MetaVoice Live has an update available. It will now restart.",
+      buttons: ["OK"],
+    });
+    setupUpdates(update);
+    app.exit(0);
+    return;
+  }
 
   let options;
   if (!IS_DEV)
