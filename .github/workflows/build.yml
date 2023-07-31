@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  METAVOICECODE_ROOT: ${GITHUB_WORKSPACE} 
+  SITE_PACKAGES: ${GITHUB_WORKSPACE} 
+  PYTHONPATH: ${GITHUB_WORKSPACE} 
+
 jobs:
   build:
     runs-on: ubuntu-latest
