@@ -109,6 +109,7 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    needs: [build-windows,build-macos]
     steps:
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v3
