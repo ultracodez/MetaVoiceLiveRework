@@ -44,7 +44,7 @@ jobs:
         npm run electron-package-win
     - uses: actions/upload-artifact@v3
       with:
-        name: build
+        name: build-windows
         path: out/make/zip/**/*.*  
   build-macos:
 
@@ -102,7 +102,7 @@ jobs:
 
         with:
 
-          name: build
+          name: build-macos
 
           path: out/make/zip/**/*.*
 
