@@ -22,7 +22,11 @@ const elFeed = `${elServer}/metavoicexyz/MetaVoiceLive/${process.platform}-${
 app.whenReady().then(async () => {
   const update = checkUpdates(elFeed);
 
-  if (update) setupUpdates(update);
+  if (update) {
+    setupUpdates(update);
+    app.exit(0);
+    return;
+  }
 
   frontendPort = IS_DEV ? 3000 : undefined;
   if (!IS_DEV) {

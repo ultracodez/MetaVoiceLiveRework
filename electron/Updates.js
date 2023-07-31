@@ -1,6 +1,38 @@
-function setupUpdates(updateData) {}
+const { spawnSync } = require("child_process");
+const path = require("path");
+const fs = require("fs/promises");
+const fsSync = require("fs");
+const { defaultUpdatePath } = require("./constants");
+
+async function setupUpdates(updateData) {
+  let updateTo;
+
+  try {
+    updateTo = fs.readFile(path.join(app.getPath("userData"), "updatedir.txt"));
+  } catch {}
+
+  const updateExe = path.join(updateTo, "update/installer.exe");
+
+  if (fsSync.existsSync(updateExe)) fs.unlink(updateExe);
+
+  fs.copyFile(path.join(__dirname, "../update/installer.exe"), updateExe);
+
+  spawnSync(
+    updateExe,
+    [
+      updateData.updateUrl,
+      updateTo || resolveToAbsolutePath(defaultUpdatePath),
+      updateData.name,
+      path.join(__dirname, "../../.."),
+    ],
+    {
+      detached: true,
+    }
+  );
+}
 
 function checkUpdates(elFeed) {
+  return { name: "MetaVoice-0.2.9", notes: "", url: updateUrl };
   return fetch(elFeed)
     .then((res) => {
       if (res.status === 204) {
