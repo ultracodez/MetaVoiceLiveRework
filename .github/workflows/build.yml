@@ -45,7 +45,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: build-windows
-        path: out/make/zip/**/*.*  
+        path: out/make/zip/win32/**/*.*  
   build-macos:
 
       runs-on: macos-latest
@@ -104,8 +104,19 @@ jobs:
 
           name: build-macos
 
-          path: out/make/zip/**/*.*
-
+          path: out/make/zip/darwin/**/*.*
+          
+  create-release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
+    - name: Create release with artifacts
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "**/*.*"
+        bodyFile: "body.md"
     
 
         
