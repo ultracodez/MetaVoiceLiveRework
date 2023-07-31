@@ -1,5 +1,3 @@
-include ./Makefile.variable
-
 build-installer: 
 	pyinstaller -y -F -n installer -p /update --workpath ./updaterbuild --distpath ./update update/update.py
 
