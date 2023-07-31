@@ -12,7 +12,7 @@ env:
   PYTHONPATH: ${GITHUB_WORKSPACE} 
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
 
     strategy:
@@ -44,7 +44,79 @@ jobs:
         npm run electron-package-win
     - uses: actions/upload-artifact@v3
       with:
-        name: build
-        path: out/make/zip/**/*.*
+        name: build-windows
+        path: out/make/zip/win32/**/*.*  
+  build-macos:
+
+      runs-on: macos-latest
+
+      strategy:
+
+        matrix:
+
+          node-version: [19.x]
+
+          python-version: ["3.9"]
+
+      steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+ 
+        uses: actions/setup-node@v3
+
+        with:
+
+          node-version: ${{ matrix.node-version }}
+
+      - name: Set up Python ${{ matrix.python-version }}
+
+        uses: actions/setup-python@v4
+
+        with:
+
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+
+        run: |
+
+          python -m pip install --upgrade pip
+
+          pip install -r requirements.txt
+
+      - name: Build
+
+        run: |
+
+          npm install
+
+          npm run build-updater
+  
+          npm run next-package
+
+          npm run electron-package-win
+
+      - uses: actions/upload-artifact@v3
+
+        with:
+
+          name: build-macos
+
+          path: out/make/zip/darwin/**/*.*
+          
+  create-release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
+    - name: Create release with artifacts
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "**/*.*"
+        bodyFile: "body.md"
     
+
         
