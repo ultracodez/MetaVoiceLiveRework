@@ -14,7 +14,9 @@ export default function Settings({
 
   return (
     <div>
-      <SettingsModal {...{ open, setOpen, ...options }} />
+      <SettingsModal
+        {...{ open, setOpen, isOnline: isServerOnline, ...options }}
+      />
       {/* Invisible elements so the classes compile */}
       <div className="hidden bg-green-500" />
       <div className="hidden bg-red-500" />

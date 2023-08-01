@@ -43,7 +43,7 @@ export default function ResultDrawer({
           <IoMenuOutline className="h-full m-auto" />
         </div>
         <div className="flex h-full bg-slate-800">
-          <div className="m-auto w-5/12">
+          <div className="m-auto w-full px-4 md:w-9/12 lg:max-w-2xl">
             <div className="text-center w-full text-xl text-white">
               Review & Share
             </div>

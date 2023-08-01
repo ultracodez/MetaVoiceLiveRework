@@ -1,5 +1,6 @@
 import { Dialog, Transition, RadioGroup } from "@headlessui/react";
 import { Fragment, useRef, useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 export default function ResultModal({ isModalOpen, setIsModalOpen }) {
   const cancelButtonRef = useRef(null);
@@ -23,10 +24,11 @@ export default function ResultModal({ isModalOpen, setIsModalOpen }) {
       .then((_response) => {
         setSendInProgress(false);
         setIsModalOpen(false);
+        toast.success("Thanks for your feedback!")
       })
       .catch((_error) => {
         console.log(_error);
-        alert("Something went wrong. Please try again.");
+        toast.error("Something went wrong. Please try again.");
         setSendInProgress(false);
       });
     setSendInProgress(true);
