@@ -1,9 +1,36 @@
 import { Dialog, Transition, RadioGroup } from "@headlessui/react";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef, useState, useEffect } from "react";
 
 export default function ResultModal({ isModalOpen, setIsModalOpen }) {
   const cancelButtonRef = useRef(null);
   const [duration, setDuration] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [sendInProgress, setSendInProgress] = useState(false);
+
+  const [SERVER_BASE_URL, setBaseUrl] = useState("http://localhost:58000");
+  useEffect(() => {
+    (async () => {
+      if (typeof window !== "undefined")
+        setBaseUrl(await window.electronAPI.getServerBaseURL());
+    })();
+  }, [typeof window]);
+
+  const handleSubmit = (_event) => {
+    fetch(
+      `${SERVER_BASE_URL}/feedback?content=${feedback}&duration=${duration}`,
+      { method: "GET", keepalive: true }
+    )
+      .then((_response) => {
+        setSendInProgress(false);
+        setIsModalOpen(false);
+      })
+      .catch((_error) => {
+        console.log(_error);
+        alert("Something went wrong. Please try again.");
+        setSendInProgress(false);
+      });
+    setSendInProgress(true);
+  };
 
   return (
     <Transition.Root show={isModalOpen ?? false} as={Fragment}>
@@ -55,6 +82,10 @@ export default function ResultModal({ isModalOpen, setIsModalOpen }) {
                       Suggestions:
                     </div>
                     <textarea
+                      value={feedback}
+                      onChange={(e) => {
+                        setFeedback(e.target.value);
+                      }}
                       placeholder="What would you like us to improve?"
                       className="block p-2.5 h-40 w-full text-sm rounded-lg resize-none bg-slate-800/50 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                       maxLength={1024}
@@ -136,10 +167,34 @@ export default function ResultModal({ isModalOpen, setIsModalOpen }) {
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-70 shadow-sm hover:bg-gray-300 sm:ml-3 sm:w-auto"
-                      onClick={() => setIsModalOpen(false)}
+                      onClick={handleSubmit}
                     >
-                      Send
+                      {sendInProgress ? (
+                        <svg
+                          class="animate-spin m-auto h-5 w-5 text-slate-800"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        "Send"
+                      )}
                     </button>
+
                     <button
                       type="button"
                       className="mt-3 text-white hover:text-slate-700 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
@@ -149,7 +204,7 @@ export default function ResultModal({ isModalOpen, setIsModalOpen }) {
                       Cancel
                     </button>
                   </div>
-                  <div className=" text-gray-300 text-center pb-4 text-xs sm:flex sm:flex-row-reverse">
+                  <div className=" text-gray-300 mr-2 text-center pb-4 text-xs sm:flex sm:flex-row-reverse">
                     By clicking send, you agree to share your data with
                     MetaVoice strictly for the purposes of providing you a
                     better voice &#38; app experience.
