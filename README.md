@@ -12,6 +12,7 @@ A fork of MVL that cleans up the code and reworks the UI.
  - Added "Server online/offline" indicator
  - Added favoriting
  - Added custom update directory
+ - Added swift Review & Share drawer
  - Cleanup up code, especially Electron code, into separate files so it is more organized
 
 ## Screenshots
@@ -27,6 +28,12 @@ A fork of MVL that cleans up the code and reworks the UI.
 ![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/de7b4a9b-6baf-4b9c-85ac-82a6c1b5d290)
 
 ![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/6ae50ce2-cd0f-4400-97f2-ec8646abf303)
+
+![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/f7c31b72-0ae3-4ce1-b932-f130e5d157c3)
+
+![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/49490e42-a467-43cc-b97d-d87b4bcc3031)
+
+![image](https://github.com/ultracodez/MetaVoiceLiveRework/assets/80412399/5dd93909-a22c-447b-9e90-233c9944a716)
 
 
 ## Setup
