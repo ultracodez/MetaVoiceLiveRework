@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import styles from "react-modern-drawer/dist/index.css";
 import { IoMenuOutline, IoShareSocial } from "react-icons/io5";
 import ResultRenderer from "./Result";
+import ResultModal from "./ResultModal";
 
 export default function ResultDrawer({
   originalAudio,
@@ -10,6 +11,7 @@ export default function ResultDrawer({
   sessionRecordingEnabled,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -47,7 +49,17 @@ export default function ResultDrawer({
             </div>
             <div className="mt-4" />
             <ResultRenderer {...{ originalAudio, convertedAudio }} />
-            <button className="flex text-white bg-red-500 rounded-full px-6 py-2 mt-6 m-auto">
+            <ResultModal
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
+            />
+            <button
+              onClick={() => {
+                setIsModalOpen(!isModalOpen);
+                setIsOpen(false);
+              }}
+              className="flex text-white bg-red-500 rounded-full px-6 py-2 mt-6 m-auto"
+            >
               <IoShareSocial className="my-auto mr-1" /> Share Feedback
             </button>
           </div>
