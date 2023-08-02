@@ -2,10 +2,73 @@ const { spawnSync } = require("child_process");
 const path = require("path");
 const fs = require("fs/promises");
 const fsSync = require("fs");
-const { defaultUpdatePath } = require("./constants");
+const { defaultUpdatePath, mlVersion, mlUpdateURL } = require("./constants");
 const { platform } = require("os");
+const { ipcMain } = require("electron");
 
 const supportedUpdatePlatforms = ["win32"];
+
+async function setupMvmlUpdates(mvmlUpdate, window) {
+  console.log(
+    "handling communication between renderer and main for mvmlUpdate live logs"
+  );
+  return new Promise(async (resolve, reject) => {
+    window.webContents.openDevTools();
+    window.webContents.on("did-finish-load", async () => {
+      console.log("frontend loaded");
+
+      await new Promise((r) => setTimeout(r, 2000));
+      window.webContents.send("log-update-preparing");
+
+      window.webContents.send("log-update", "how are you 1");
+
+      window.webContents.send("log-update", "how are you 2");
+
+      window.webContents.send("log-update", "how are you 3");
+
+      window.webContents.send("log-update", "how are you 4");
+      resolve();
+    });
+  });
+}
+
+async function checkMvmlUpdates() {
+  let currentVersion;
+  const currentVersionPath = path.join(
+    __dirname,
+    "../dist/metavoice/version.txt"
+  );
+  const updateURL = mlUpdateURL + `mvml-${platform}-` + mlVersion + ".zip";
+  console.log("Checking for new Mvml at:", updateURL);
+  if (fsSync.existsSync(currentVersionPath))
+    currentVersion = await fs.readFile(currentVersionPath);
+
+  if (!fsSync.existsSync(path.join(__dirname, "../dist/.unzip-finished"))) {
+    // unzip did not complete
+    return {
+      needsNewVersion: true,
+      reason: "unzip did not finish",
+      updateURL: updateURL,
+    };
+  }
+
+  if (currentVersion === "local") {
+    return { needsNewVersion: false, reason: "local version" };
+  }
+  // current major, minor, patch
+  const [cM, cm, cp] = currentVersion.split(".").map(Number);
+  // requested major, minor, patch
+  const [rM, rm, rp] = mlVersion.split(".").map(Number);
+
+  // major: upgrade or downgrade
+  // minor: upgrade only
+  // patch: upgrade only
+  return {
+    needsNewVersion: cM !== rM || cm < rm || (cm === rm && cp < rp),
+    reason: `current version ${currentVersion} is not compatible with requested version ${mlVersion}`,
+    updateURL: updateURL,
+  };
+}
 
 async function setupUpdates(updateData) {
   if (platform === "win32") {
@@ -35,6 +98,8 @@ async function setupUpdates(updateData) {
         detached: true,
       }
     );
+
+    return true;
   } else return false;
 }
 
@@ -69,4 +134,9 @@ function checkUpdates(elFeed) {
     });
 }
 
-module.exports = { setupUpdates, checkUpdates };
+module.exports = {
+  setupUpdates,
+  checkUpdates,
+  checkMvmlUpdates,
+  setupMvmlUpdates,
+};

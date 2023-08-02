@@ -22,4 +22,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getBaseVoices: () => {
     return ipcRenderer.invoke("request-base-voices", null);
   },
+  onLog: (func) => {
+    ipcRenderer.on("log-update", (event, ...args) => func(...args));
+  },
+  onPreparing: (func) => {
+    ipcRenderer.on("log-update-preparing", (event, ...args) => func(...args));
+  },
+  sendPreparing: () => {
+    return ipcRenderer.invoke("preparation-received", null);
+  },
 });

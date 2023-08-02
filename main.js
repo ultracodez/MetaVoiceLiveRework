@@ -5,7 +5,12 @@ const { setupLifecycles } = require("./electron/Lifecycle");
 const { setupIpcHooks } = require("./electron/IpcHooks");
 const { setupFrontendServer } = require("./electron/FrontendServer");
 const { setupBackendServer } = require("./electron/BackendServer");
-const { setupUpdates, checkUpdates } = require("./electron/Updates");
+const {
+  setupUpdates,
+  setupMvmlUpdates,
+  checkUpdates,
+  checkMvmlUpdates,
+} = require("./electron/Updates");
 
 const IS_DEV = process.env.IS_DEV === "dev";
 
@@ -21,10 +26,15 @@ const elFeed = `${elServer}/metavoicexyz/MetaVoiceLive/${process.platform}-${
 
 app.whenReady().then(async () => {
   const update = await checkUpdates(elFeed);
+  let mvmlUpdate;
+  if (!update) {
+    mvmlUpdate = await checkMvmlUpdates();
+  }
 
+  mvmlUpdate = { needsNewVersion: true };
   let window;
 
-  setupIpcHooks(app, window);
+  setupIpcHooks(app, window, { mvmlUpdate });
 
   frontendPort = IS_DEV ? 3000 : undefined;
   if (!IS_DEV) {
@@ -38,19 +48,22 @@ app.whenReady().then(async () => {
     );
   }
 
-  window = createWindow(IS_DEV, frontendPort);
+  window = createWindow(IS_DEV, frontendPort, { mvmlUpdate });
   if (update) {
     await dialog.showMessageBox(window, {
       title: "MetaVoice Live needs to update",
       message: "MetaVoice Live has an update available. It will now restart.",
       buttons: ["OK"],
     });
-    if (setupUpdates(update)) app.exit(0);
+    if (await setupUpdates(update)) app.exit(0);
+  }
+  if (mvmlUpdate) {
+    setupMvmlUpdates(mvmlUpdate, window);
   }
 
   let options;
   if (!IS_DEV)
-    options = { backendServerKillCommand: backendServer.kill, ...options };
+    options = { backendServerKillCommand: backendServer?.kill, ...options };
 
   setupLifecycles(app, options);
 });
