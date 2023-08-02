@@ -45,9 +45,7 @@ app.whenReady().then(async () => {
       message: "MetaVoice Live has an update available. It will now restart.",
       buttons: ["OK"],
     });
-    setupUpdates(update);
-    app.exit(0);
-    return;
+    if (setupUpdates(update)) app.exit(0);
   }
 
   let options;
