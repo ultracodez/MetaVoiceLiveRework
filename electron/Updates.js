@@ -5,6 +5,7 @@ const fsSync = require("fs");
 const { defaultUpdatePath, mlVersion, mlUpdateURL } = require("./constants");
 const { platform } = require("os");
 const { ipcMain } = require("electron");
+var http = require("https");
 
 const supportedUpdatePlatforms = ["win32"];
 
@@ -15,19 +16,86 @@ async function setupMvmlUpdates(mvmlUpdate, window) {
   return new Promise(async (resolve, reject) => {
     window.webContents.openDevTools();
     window.webContents.on("did-finish-load", async () => {
-      console.log("frontend loaded");
+      try {
+        await new Promise((r) => setTimeout(r, 2000));
+        window.webContents.send("log-update-preparing");
 
-      await new Promise((r) => setTimeout(r, 2000));
-      window.webContents.send("log-update-preparing");
+        const mvmlUpdateDir = path.join(__dirname, "../dist");
 
-      window.webContents.send("log-update", "how are you 1");
+        window.webContents.send("log-update", {
+          msg: "Downloading update from " + mvmlUpdate.updateURL,
+          type: "log",
+        });
+        window.webContents.send("log-update", {
+          msg: "to " + path.join(__dirname, "../dist"),
+          type: "log",
+        });
 
-      window.webContents.send("log-update", "how are you 2");
+        if (!fsSync.existsSync(mvmlUpdateDir)) {
+          await fs.mkdir(mvmlUpdateDir);
+          window.webContents.send("log-update", {
+            msg: "Created dist directory...",
+            type: "log",
+          });
+        }
+        if (fsSync.existsSync(mvmlUpdateDir)) {
+          await fs.rm(mvmlUpdateDir, { recursive: true, force: true });
+          await fs.mkdir(mvmlUpdateDir);
 
-      window.webContents.send("log-update", "how are you 3");
+          window.webContents.send("log-update", {
+            msg: "Deleted old dist directory...",
+            type: "info",
+          });
+        }
 
-      window.webContents.send("log-update", "how are you 4");
-      resolve();
+        var out = fsSync.createWriteStream(path.join(mvmlUpdateDir, "tmp.zip"));
+
+        await new Promise((resolve, reject) => {
+          var len = 0;
+          var lastPercent = 0;
+
+          http.get(mvmlUpdate.updateURL, function (res) {
+            res.on("data", function (chunk) {
+              out.write(chunk);
+              len += chunk.length;
+
+              // percentage downloaded is as follows
+              var percent = (len / res.headers["content-length"]) * 100;
+              percent = Math.round(percent * 10) / 10;
+
+              if (lastPercent === percent) return;
+
+              lastPercent = percent;
+
+              window.webContents.send("log-update", {
+                msg: `Downloading: ${percent}% complete`,
+                type: "log",
+                extra: { percent },
+              });
+            });
+            res.on("end", function () {
+              resolve();
+            });
+            res.on("error", function (e) {
+              reject(e);
+            });
+          });
+        });
+
+        resolve();
+      } catch (e) {
+        console.log("error:", e);
+        window.webContents.send("log-update", {
+          msg: "An error occurred while downloading mvml: ",
+          type: "error",
+        });
+        window.webContents.send("log-update", {
+          msg: JSON.stringify(e.message),
+          type: "error",
+        });
+
+        reject();
+      }
     });
   });
 }
