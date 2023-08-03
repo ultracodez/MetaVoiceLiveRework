@@ -23,11 +23,11 @@ async function setupMvmlUpdates(mvmlUpdate, window) {
         const mvmlUpdateDir = path.join(__dirname, "../dist");
 
         window.webContents.send("log-update", {
-          msg: "Downloading update from " + mvmlUpdate.updateURL,
-          type: "log",
-        });
-        window.webContents.send("log-update", {
-          msg: "to " + path.join(__dirname, "../dist"),
+          msg:
+            "Downloading update from " +
+            mvmlUpdate.updateURL +
+            " to " +
+            path.join(__dirname, "../dist"),
           type: "log",
         });
 
@@ -68,12 +68,16 @@ async function setupMvmlUpdates(mvmlUpdate, window) {
               lastPercent = percent;
 
               window.webContents.send("log-update", {
-                msg: `Downloading: ${percent}% complete`,
-                type: "log",
+                msg: `Downloading: ${percent.toFixed(1)}% complete`,
+                type: "percent",
                 extra: { percent },
               });
             });
             res.on("end", function () {
+              window.webContents.send("log-update", {
+                msg: "Download: Finished!",
+                type: "success",
+              });
               resolve();
             });
             res.on("error", function (e) {
@@ -81,6 +85,8 @@ async function setupMvmlUpdates(mvmlUpdate, window) {
             });
           });
         });
+
+        out.close();
 
         resolve();
       } catch (e) {
