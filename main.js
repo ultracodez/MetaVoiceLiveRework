@@ -30,12 +30,6 @@ app.whenReady().then(async () => {
   if (!update) {
     mvmlUpdate = await checkMvmlUpdates();
   }
-
-  mvmlUpdate = {
-    needsNewVersion: true,
-    updateURL:
-      "https://mv-downloads.s3.eu-west-1.amazonaws.com/mvml/mvml-win32-0.1.4.zip",
-  };
   let window;
 
   setupIpcHooks(app, window, { mvmlUpdate });
