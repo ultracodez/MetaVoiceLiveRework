@@ -57,6 +57,7 @@
     "react-icons": "^4.10.1",
     "react-modern-drawer": "^1.2.0",
     "server-static": "^2.0.5",
+    "sha256-file": "^1.0.0",
     "styled-components": "^6.0.5",
     "tailwindcss": "3.3.3",
     "use-array-state": "^1.0.2"

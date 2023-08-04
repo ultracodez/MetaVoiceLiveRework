@@ -46,10 +46,13 @@ app.whenReady().then(async () => {
       path.join(__dirname, "renderer/build")
     );
     frontendPort = frontendServer.address().port;
-    console.log(path.join(__dirname, "dist/metavoice/metavoice.exe"));
-    backendServer = setupBackendServer(
-      path.join(__dirname, "dist/metavoice/metavoice.exe")
-    );
+
+    if (!mvmlUpdate && !update) {
+      console.log(path.join(__dirname, "dist/metavoice/metavoice.exe"));
+      backendServer = setupBackendServer(
+        path.join(__dirname, "dist/metavoice/metavoice.exe")
+      );
+    }
   }
 
   window = createWindow(IS_DEV, frontendPort, { mvmlUpdate });
@@ -62,7 +65,13 @@ app.whenReady().then(async () => {
     if (await setupUpdates(update)) app.exit(0);
   }
   if (mvmlUpdate && mvmlUpdate.needsNewVersion) {
-    setupMvmlUpdates(mvmlUpdate, window);
+    setupMvmlUpdates(mvmlUpdate, window, app, {
+      onFinish: () => {
+        backendServer = setupBackendServer(
+          path.join(__dirname, "dist/metavoice/metavoice.exe")
+        );
+      },
+    });
   }
 
   let options;

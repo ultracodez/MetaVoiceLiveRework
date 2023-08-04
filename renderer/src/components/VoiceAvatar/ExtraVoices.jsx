@@ -1,13 +1,6 @@
-import { Fragment, useRef, useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Slider } from "@material-tailwind/react/src/components/Slider/index";
-import { scaleBetween } from "../../helpers/scalebetween";
-import {
-  IoConstruct,
-  IoDiamond,
-  IoDiamondOutline,
-  IoPersonCircle,
-} from "react-icons/io5";
+import { IoConstruct, IoDiamond } from "react-icons/io5";
 import { ExtraVoiceAvatar } from "./ExtraVoiceAvatar";
 
 export default function ExtraVoicesModal({

@@ -1,6 +1,6 @@
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Slider } from "@material-tailwind/react/src/components/Slider/index";
+import { Slider } from "@material-tailwind/react/components/Slider";
 import { scaleBetween } from "../../helpers/scalebetween";
 import { toast } from "react-hot-toast";
 
