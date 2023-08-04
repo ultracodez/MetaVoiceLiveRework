@@ -45,7 +45,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: build-windows
-        path: out/make/win32/x64/MetaVoice-*.zip
+        path: out/make/zip/win32/**/*.*  
   build-macos:
 
       runs-on: macos-latest
@@ -104,5 +104,5 @@ jobs:
 
           name: build-macos
 
-          path: out/make/darwin/x64/MetaVoice-*.zip
+          path: out/make/zip/darwin/**/*.*
           
