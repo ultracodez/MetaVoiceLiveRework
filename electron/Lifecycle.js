@@ -1,6 +1,7 @@
 function setupLifecycles(app, options) {
   app.on("window-all-closed", () => {
-    if (options.backendServerKillCommand) options.backendServerKillCommand();
+    if (options && options.backendServerKillCommand)
+      options.backendServerKillCommand();
     if (process.platform !== "darwin") app.quit();
   });
 

@@ -39,20 +39,28 @@
   "dependencies": {
     "@headlessui/react": "^1.7.15",
     "@material-tailwind/react": "^2.0.7",
+    "@radix-ui/react-scroll-area": "^1.0.4",
     "@tailwindcss/forms": "^0.5.4",
     "@uidotdev/usehooks": "^2.0.1",
     "autoprefixer": "10.4.14",
     "classnames": "^2.3.2",
+    "debug": "^4.3.4",
     "embla-carousel-react": "8.0.0-rc11",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
+    "extract-zip": "^2.0.1",
+    "finalhandler": "^1.2.0",
     "next": "^13.4.12",
     "postcss": "8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-icons": "^4.10.1",
+    "react-modern-drawer": "^1.2.0",
     "server-static": "^2.0.5",
+    "sha256-file": "^1.0.0",
     "styled-components": "^6.0.5",
-    "tailwindcss": "3.3.3"
+    "tailwindcss": "3.3.3",
+    "use-array-state": "^1.0.2"
   }
 }

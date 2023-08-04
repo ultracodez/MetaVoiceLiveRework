@@ -1,6 +1,5 @@
 "use client";
 import Carousel from "../components/Carousel/Carousel";
-import VoiceAvatar from "../components/VoiceAvatar";
 import {
   IoArrowForward,
   IoCaretUp,
@@ -8,10 +7,12 @@ import {
   IoMicOutline,
   IoVolumeHighOutline,
 } from "react-icons/io5";
-import { Disclosure, Transition } from "@headlessui/react";
 import Settings from "../components/Nav/Settings";
 import { useState, useEffect } from "react";
 import type DeviceMap from "../helpers/devicemaptypes";
+import ResultDrawer from "../components/ResultDrawer";
+import { baseVoicesTemp } from "../helpers/tempconstants";
+import { toast } from "react-hot-toast";
 
 function App() {
   const [SERVER_BASE_URL, setBaseUrl] = useState("http://localhost:58000");
@@ -21,6 +22,7 @@ function App() {
       if (typeof window !== "undefined")
         setBaseUrl(await (window as any).electronAPI.getServerBaseURL());
       setAppVersion(await (window as any).electronAPI.getAppVersion());
+      setBaseVoices(await (window as any).electronAPI.getBaseVoices());
     })();
   }, [typeof window]);
 
@@ -35,17 +37,34 @@ function App() {
   const [convertStartTime, setConvertStartTime] = useState<number>();
   const [originalAudio, setOriginalAudio] = useState<string>();
   const [convertedAudio, setConvertedAudio] = useState<string>();
+  const [baseVoices, setBaseVoices] = useState(baseVoicesTemp);
+  const [sessionRecordingUI, setSessionRecordingUI] = useState(true);
 
   function handleConverting(newState) {
-    console.log(process.env.npm_package_version);
     if (
       newState &&
       inputDeviceId !== "" &&
       outputDeviceId !== "" &&
       selectedVoice
     ) {
+      setProcessing(true);
       const convertStartTime_ = Date.now();
       setConvertStartTime(convertStartTime_);
+      console.log(
+        "e",
+        [
+          SERVER_BASE_URL,
+          "/start-convert",
+          "?input_device_idx=",
+          inputDeviceId,
+          "&output_device_idx=",
+          outputDeviceId,
+          "&app_version=",
+          appVersion || "0.3.0", //process.env.npm_package_version
+          "&target_speaker=",
+          selectedVoice.toLowerCase(),
+        ].join("")
+      );
       fetch(
         [
           SERVER_BASE_URL,
@@ -69,12 +88,14 @@ function App() {
         })
         .catch((error) => {
           console.log("Failed to start converting");
-          // TODO: toast, send auth info
+          // TODO: send auth info
+          toast.error("Failed to start converting. Is the server online?");
           console.log(error);
           setProcessing(false);
           setConverting(false);
         });
     } else if (inputDeviceId && outputDeviceId && selectedVoice) {
+      setProcessing(true);
       fetch(`${SERVER_BASE_URL}/stop-convert`, {
         method: "GET",
         keepalive: true,
@@ -118,29 +139,11 @@ function App() {
           setProcessing(false);
         });
     }
-
-    setProcessing(true);
   }
 
   useEffect(() => {
     if (!converting) setAreFramesDropping(null);
   }, [converting]);
-
-  const voices = [
-    { id: 1, img: { src: "/zeus.webp", alt: "Voice: Zeus" }, name: "Zeus" },
-
-    {
-      id: 2,
-      img: { src: "/scarlett.webp", alt: "Voice: Scarlett" },
-      name: "Scarlett",
-    },
-
-    { id: 3, img: { src: "/eva.webp", alt: "Voice: Eva" }, name: "Eva" },
-
-    { id: 4, img: { src: "/yara.webp", alt: "Voice: Yara" }, name: "Yara" },
-
-    { id: 5, img: { src: "/alex.webp", alt: "Voice: Alex" }, name: "Alex" },
-  ];
 
   useEffect(() => {
     // Fetch the device map when the server comes online
@@ -194,11 +197,19 @@ function App() {
           });
     }
   }
-  setTimeout(checkServerIsOnline, 1, 2000);
+  useEffect(() => {
+    setTimeout(checkServerIsOnline, 1, 2000);
+  }, []);
 
   return (
     <div className="relative bg-slate-800 min-h-screen flex">
+      <ResultDrawer
+        sessionRecordingEnabled={sessionRecordingUI}
+        originalAudio={originalAudio}
+        convertedAudio={convertedAudio}
+      />
       <Settings
+        onSessionRecordingChanged={setSessionRecordingUI}
         isServerOnline={isServerOnline}
         areFramesDropping={areFramesDropping}
       />
@@ -209,7 +220,7 @@ function App() {
         <Carousel
           setVoice={setSelectedVoice}
           className="w-[35rem]"
-          voices={voices}
+          voices={baseVoices}
         />
         <div className="w-[45rem] flex justify-between mt-10">
           <div>
@@ -291,7 +302,11 @@ function App() {
             onClick={() => {
               handleConverting(!converting);
             }}
-            className={`rounded-full bg-${
+            disabled={
+              processing ||
+              !(inputDeviceId !== "" && outputDeviceId !== "" && selectedVoice)
+            }
+            className={`rounded-full disabled:border-gray-500 disabled:bg-slate-700 disabled:text-slate-400 bg-${
               converting ? "red-500" : "slate-700"
             } border text-white border-gray-600 py-4 px-16`}
           >

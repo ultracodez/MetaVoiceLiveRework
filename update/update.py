@@ -2,6 +2,8 @@ import sys
 import os
 import shutil
 import requests
+import xdialog
+import traceback
 
 
 print("This file is called by Updates.js with the first parameter being where to download the update from and the second being where to update to")
@@ -57,6 +59,10 @@ if (os.name == 'nt'):
         exit(1)
     except Exception as e:
         print("An unknown error occurred:", e)
+        errorMessage = traceback.format_exc()
+        xdialog.error(
+            "An error occurred while updating MetaVoice Live", errorMessage)
+
         exit(1)
 elif (os.name == 'posix'):
     print("POSIX (MacOs, OSX, UNIX, Linux) is not currently supported by the autoupdater")

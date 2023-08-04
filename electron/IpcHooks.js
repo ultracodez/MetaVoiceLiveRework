@@ -9,7 +9,7 @@ const path = require("path");
 const fs = require("fs/promises");
 const fsSync = require("fs");
 
-function setupIpcHooks(app, window) {
+function setupIpcHooks(app, window, opt = {}) {
   ipcMain.handle("show-update-directory-picker", async (event) => {
     return await dialog
       .showOpenDialog(window, {

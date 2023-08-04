@@ -1,7 +1,4 @@
-const package = require("../package.json");
-
-//TODO: WHEN CHANGING THIS VARIABLE, DO NOT CHANGE THE IDs
-const voices = [
+const baseVoicesTemp = [
   {
     id: 1,
     img: { src: "/zeus.webp", alt: "Voice: Zeus" },
@@ -70,19 +67,4 @@ const voices = [
   },
 ];
 
-const baseVoices = voices.map((voice) => {
-  return { isBase: true, ...voice };
-});
-
-const BASE_SERVER_URL = "http://localhost:58000";
-const defaultUpdatePath = "%localappdata%/MetaVoice";
-const mlVersion = package.mlVersion || "0.1.4";
-const mlUpdateURL = "https://mv-downloads.s3.eu-west-1.amazonaws.com/mvml/";
-
-module.exports = {
-  baseVoices,
-  BASE_SERVER_URL,
-  defaultUpdatePath,
-  mlVersion,
-  mlUpdateURL,
-};
+export { baseVoicesTemp };

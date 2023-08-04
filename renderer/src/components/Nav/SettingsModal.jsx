@@ -1,9 +1,10 @@
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Slider } from "@material-tailwind/react/src/components/Slider/index";
+import { Slider } from "@material-tailwind/react/components/Slider";
 import { scaleBetween } from "../../helpers/scalebetween";
+import { toast } from "react-hot-toast";
 
-export default function SettingsModal({ open, setOpen }) {
+export default function SettingsModal({ open, setOpen, ...options }) {
   const [SERVER_BASE_URL, setBaseUrl] = useState("http://localhost:58000");
   const [defaultUpdatePath, setDefaultUpdatePath] = useState();
   const [updatePath, setUpdatePath] = useState();
@@ -29,6 +30,8 @@ export default function SettingsModal({ open, setOpen }) {
   const [shareData, setShareData] = useState(true);
   const [sessionRecording, setSessionRecording] = useState(true);
 
+  const [errored, setErrored] = useState(false);
+
   useEffect(() => {
     if (localStorage.getItem("MV_UPDATE_PATH"))
       setUpdatePath(localStorage.getItem("MV_UPDATE_PATH"));
@@ -36,10 +39,15 @@ export default function SettingsModal({ open, setOpen }) {
       setShareData(
         localStorage.getItem("MV_SHARE_DATA") === "true" ? true : false
       );
-    if (localStorage.getItem("MV_SESSION_RECORDING"))
+    if (localStorage.getItem("MV_SESSION_RECORDING")) {
       setSessionRecording(
         localStorage.getItem("MV_SESSION_RECORDING") === "true" ? true : false
       );
+      if (options.onSessionRecordingChanged)
+        options.onSessionRecordingChanged(
+          localStorage.getItem("MV_SESSION_RECORDING") === "true" ? true : false
+        );
+    }
     if (localStorage.getItem("MV_LATENCY"))
       setLatency(localStorage.getItem("MV_LATENCY"));
     if (localStorage.getItem("MV_NOISE_SUPPRESSION"))
@@ -68,6 +76,7 @@ export default function SettingsModal({ open, setOpen }) {
             );
           } catch {
             console.log("error settings callback latency");
+            setErrored(true);
           }
         }, 2000);
       }
@@ -96,6 +105,7 @@ export default function SettingsModal({ open, setOpen }) {
             );
           } catch {
             console.log("Error setting noise suppression server-side");
+            setErrored(true);
           }
         }, 2000);
       }
@@ -104,6 +114,8 @@ export default function SettingsModal({ open, setOpen }) {
 
   const handleShareData = async (value) => {
     window.localStorage.setItem("MV_SHARE_DATA", value);
+
+    setShareData(value);
     try {
       await fetch(`${SERVER_BASE_URL}/data-share?value=${value}`, {
         method: "GET",
@@ -111,21 +123,21 @@ export default function SettingsModal({ open, setOpen }) {
     } catch (error) {
       console.log(`GET /data-share failed with error: ${error}`);
     }
-
-    setShareData(value);
   };
 
   const handleSessionRecording = async (value) => {
     window.localStorage.setItem("MV_SESSION_RECORDING", value);
+    setSessionRecording(value);
+    options.onSessionRecordingChanged(value);
+
     try {
       await fetch(`${SERVER_BASE_URL}/session-recording?value=${value}`, {
         method: "GET",
       });
     } catch (error) {
       console.log(`GET /session-recording failed with error: ${error}`);
+      setErrored(true);
     }
-
-    setSessionRecording(value);
   };
 
   //TODO: Implement Supabase Auth
@@ -148,8 +160,12 @@ export default function SettingsModal({ open, setOpen }) {
       { method: "GET" }
     ).catch((error) => {
       console.log(`register user failed: ${error}`);
+      if (options.isOnline)
+        toast.error(
+          "An error occurred while registering with the backend. MetaVoice Live will not be able to continue operating successfully. Please close the program."
+        );
     });
-  }, []);
+  }, [options.isOnline]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -353,13 +369,21 @@ export default function SettingsModal({ open, setOpen }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-70 shadow-sm hover:bg-gray-300 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      if (errored) {
+                        toast.error("Failed to set some settings.");
+                        setErrored(false);
+                      } else {
+                        toast.success("Saved all settings successfully.");
+                      }
+                      setOpen(false);
+                    }}
                   >
                     Save
                   </button>
                   <button
                     type="button"
-                    className="mt-3 text-white hover:text-slate-700 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    className="mt-3 text-white hover:text-slate-900 inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >

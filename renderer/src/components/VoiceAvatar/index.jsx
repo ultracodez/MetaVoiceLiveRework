@@ -27,6 +27,7 @@ export default function VoiceAvatar({
   }, [isActive]);
 
   function setOpen(val) {
+    onClick(index + 1);
     setIsModalActive(val);
   }
 
