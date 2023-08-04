@@ -64,6 +64,8 @@ app.whenReady().then(async () => {
         backendServer = setupBackendServer(
           path.join(__dirname, "dist/metavoice/metavoice.exe")
         );
+        console.log("Loading:", "http://localhost:" + port);
+        window.loadURL("http://localhost:" + port);
       },
     });
   }
