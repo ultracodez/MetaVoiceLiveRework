@@ -1,8 +1,8 @@
-const { spawnSync } = require("child_process");
+const { spawn } = require("child_process");
 const { kill } = require("process");
 
 function setupBackendServer(path) {
-  const process = spawnSync(path);
+  const process = spawn(path);
   const pid = process.pid;
   return {
     kill: () => {

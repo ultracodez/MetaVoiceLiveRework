@@ -38,8 +38,7 @@ async function setupMvmlUpdates(mvmlUpdate, window, app, opt = {}, x = 0) {
           msg: "Created dist directory...",
           type: "log",
         });
-      }
-      if (fsSync.existsSync(mvmlUpdateDir)) {
+      } else if (fsSync.existsSync(mvmlUpdateDir)) {
         await fs.rm(mvmlUpdateDir, { recursive: true, force: true });
         await fs.mkdir(mvmlUpdateDir);
 
@@ -159,6 +158,12 @@ async function setupMvmlUpdates(mvmlUpdate, window, app, opt = {}, x = 0) {
       window.webContents.send("log-update", {
         msg: "Unzip completed.",
         type: "success",
+      });
+
+      fs.appendFile(path.join(mvmlUpdateDir, ".unzip-finished"), "true");
+      fs.rm(path.join(mvmlUpdateDir, "tmp.zip"), {
+        recursive: true,
+        force: true,
       });
 
       window.webContents.send("log-update", {
@@ -406,7 +411,7 @@ async function checkMvmlUpdates() {
   const updateURL = mlUpdateURL + `mvml-${platform}-` + mlVersion + ".zip";
   console.log("Checking for new Mvml at:", updateURL);
   if (fsSync.existsSync(currentVersionPath))
-    currentVersion = await fs.readFile(currentVersionPath);
+    currentVersion = (await fs.readFile(currentVersionPath)).toString();
 
   if (!fsSync.existsSync(path.join(__dirname, "../dist/.unzip-finished"))) {
     // unzip did not complete
