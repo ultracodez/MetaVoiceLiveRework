@@ -36,10 +36,9 @@ app.whenReady().then(async () => {
 
   frontendPort = IS_DEV ? 3000 : undefined;
   if (!IS_DEV) {
-    frontendServer = setupFrontendServer(
-      path.join(__dirname, "renderer/build")
+    frontendPort = await setupFrontendServer(
+      path.join(__dirname, "renderer/build/standalone/renderer/server.js")
     );
-    frontendPort = frontendServer.address().port;
 
     if (!mvmlUpdate && !update) {
       console.log(path.join(__dirname, "dist/metavoice/metavoice.exe"));
@@ -64,8 +63,8 @@ app.whenReady().then(async () => {
         backendServer = setupBackendServer(
           path.join(__dirname, "dist/metavoice/metavoice.exe")
         );
-        console.log("Loading:", "http://localhost:" + port);
-        window.loadURL("http://localhost:" + port);
+        console.log("Loading:", "http://localhost:" + frontendPort);
+        window.loadURL("http://localhost:" + frontendPort);
       },
     });
   }
