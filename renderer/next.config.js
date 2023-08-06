@@ -4,9 +4,8 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
+  output: "standalone",
   transpilePackages: ["@material-tailwind/react"],
-  distDir: "build",
   images: { unoptimized: true },
 };
 

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run next-dev\" \"wait-on http://localhost:3000 && cross-env IS_DEV=dev electron --trace-warnings .\"",
     "next-dev": "cd renderer && next dev -p 3000",
-    "next-package": "cd renderer && next build",
+    "next-package": "cd renderer && next build && shx mkdir -p build && shx cp -r .next/standalone build/standalone && shx cp -r .next/static build/standalone/renderer/.next && shx cp -r public build/standalone/renderer/",
     "analyze-next-package": "cross-env ANALYZE=true npm run next-package",
     "electron-package-win": "electron-forge make",
     "electron-package-mac": "electron-forge make --arch=arm64 --platform=darwin",
@@ -33,6 +33,7 @@
     "install": "^0.13.0",
     "npm": "^9.8.1",
     "sass": "^1.64.1",
+    "shx": "^0.3.4",
     "typescript": "^5.1.6",
     "wait-on": "^7.0.1"
   },
@@ -50,6 +51,7 @@
     "eslint-config-next": "13.4.12",
     "extract-zip": "^2.0.1",
     "finalhandler": "^1.2.0",
+    "get-port": "^7.0.0",
     "next": "^13.4.12",
     "postcss": "8.4.27",
     "react": "18.2.0",

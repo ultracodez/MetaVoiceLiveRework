@@ -1,23 +1,27 @@
-var finalhandler = require("finalhandler");
-var http = require("http");
-var serveStatic = require("serve-static");
+const { fork } = require("child_process");
+const path = require("path");
+let { getPorts } = require("./helpers/get-port");
 
-function setupFrontendServer(servePath) {
-  // Serve up public/ftp folder
-  var serve = serveStatic(servePath, {
-    index: ["index.html", "index.htm"],
-    extensions: ["html", "htm"],
+async function setupFrontendServer(servePath) {
+  const port = await getPorts();
+  const process = fork(servePath, {
+    env: {
+      PORT: port,
+    },
+    stdio: "pipe",
   });
 
-  // Create server
-  var server = http.createServer(function onRequest(req, res) {
-    serve(req, res, finalhandler(req, res));
+  console.log("Waiting for UI thread to start...");
+
+  await new Promise((resolve, reject) => {
+    process.stdout.on("data", (chunk) => {
+      line = chunk.toString();
+      console.log("Recieved data from child process:", line);
+      if (line.includes("Listening on port")) resolve();
+    });
   });
 
-  // Listen
-  server.listen(0);
-
-  return server;
+  return port;
 }
 
 module.exports = { setupFrontendServer };
