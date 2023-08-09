@@ -27,7 +27,7 @@ const elFeed = `${elServer}/metavoicexyz/MetaVoiceLive/${process.platform}-${
 app.whenReady().then(async () => {
   const update = await checkUpdates(elFeed);
   let mvmlUpdate;
-  if (!update) {
+  if (!update && !IS_DEV) {
     mvmlUpdate = await checkMvmlUpdates();
   }
   let window;

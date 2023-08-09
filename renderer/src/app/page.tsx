@@ -193,7 +193,7 @@ function App() {
           })
           .catch((error) => {
             setIsServerOnline(false);
-            setTimeout(checkServerIsOnline, ms, ms * 2);
+            setTimeout(checkServerIsOnline, ms, ms * 2 > 7000 ? 7000 : ms * 2);
           });
     }
   }

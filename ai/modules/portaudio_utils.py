@@ -1,10 +1,10 @@
 from typing import Dict, List
 
 import sounddevice as sd
-from data_types import DeviceInfo
+from modules.data_types import DeviceInfo
 
 
-def get_devices(mode) -> Dict[str, List[DeviceInfo]]:
+def get_devices() -> Dict[str, List[DeviceInfo]]:
     sd._terminate()
     sd._initialize()
 
@@ -41,24 +41,6 @@ def get_devices(mode) -> Dict[str, List[DeviceInfo]]:
                 outputs.append(device_info)
             else:
                 raise ValueError(f"Unknown device, {str(device_info)}")
-
-    # There are three modes:
-    # i) all - contains all devices
-    # experimental & prod both remove 'system devices' like MetaVoice Cable Input & ZoomAudioDevice
-    # ii) experimental - removes krisp speaker from output device, to enable krisp microphone as input
-    # iii) prod - removes krisp microphones on top of experimental
-    if mode != "all":
-        excludeInputs.extend(["MetaVoice Cable", "ZoomAudioDevice"])
-        excludeOutputs.extend(["ZoomAudioDevice"])
-
-    if mode == "experimental":
-        excludeOutputs.extend(["krisp speaker"])
-    elif mode == "prod":
-        excludeInputs.extend(["krisp microphone"])
-        excludeOutputs.extend(["krisp speaker"])
-
-    inputs = [d for d in inputs if d.name not in excludeInputs]
-    outputs = [d for d in outputs if d.name not in excludeOutputs]
 
     return {
         "inputs": inputs,

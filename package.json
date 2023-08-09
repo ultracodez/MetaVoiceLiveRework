@@ -12,7 +12,7 @@
     "electron-package-mac": "electron-forge make --arch=arm64 --platform=darwin",
     "package-mac": "make build-server-mac && npm run next-package && npm run electron-package-mac",
     "package-win": "make build-server-windows && npm run next-package && npm run electron-package-win",
-    "server": "echo \"Make sure METAVOICECODE_ROOT and SITE_PACKAGES are on PYTHONPATH, Makefile.variable, and defined in Environment Variables\" && echo. && cd server && python main.py",
+    "server": "echo \"Make sure METAVOICECODE_ROOT and SITE_PACKAGES are on PYTHONPATH, Makefile.variable, and defined in Environment Variables\" && echo. && cd ai && python mvl.py",
     "build-updater": "make build-installer ",
     "dev-all": "concurrently \"npm run server\" \"npm run dev\""
   },

@@ -7,7 +7,7 @@ build-server-mac:
 		--add-data=${SITE_PACKAGES}/librosa/util/example_data:librosa/util/example_data \
 		--add-data=${SITE_PACKAGES}/_soundfile_data:_soundfile_data \
 		--add-data=${METAVOICECODE_ROOT}/ai:ai \
-		server/main.py
+		ai/mvl.py
 	
 	echo local > dist/metavoice/version.txt
 
@@ -17,7 +17,7 @@ build-server-windows:
 		--add-data="${SITE_PACKAGES}/librosa/util/example_data;librosa/util/example_data" \
 		--add-data="${SITE_PACKAGES}/_soundfile_data;_soundfile_data" \
 		--add-data="${METAVOICECODE_ROOT}/ai;ai" \
-		server/main.py
+		ai/mvl.py
 
 	python deploy_remove.py windows
 
